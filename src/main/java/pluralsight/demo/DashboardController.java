@@ -1,5 +1,6 @@
 package pluralsight.demo;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -22,13 +23,20 @@ public class DashboardController {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	@HystrixCommand(fallbackMethod = "GetTollRateBackup")
 	@RequestMapping("/dashboard")
 	public String GetTollRate(@RequestParam int stationId, Model m) {
 		
 		//RestTemplate rest = new RestTemplate();
-		TollRate tr = restTemplate.getForObject("http://pluralsight-toll-service/tollrate/" + stationId, TollRate.class);
+		TollRate tr = restTemplate.getForObject("http://pluralsight-tollrate-service/tollrate/" + stationId, TollRate.class);
 		System.out.println("stationId: " + stationId);
 		m.addAttribute("rate", tr.getCurrentRate());
+		return "dashboard";
+	}
+
+	public String GetTollRateBackup(@RequestParam int stationId, Model m){
+		System.out.println("Fallback oerationcalled!");
+		m.addAttribute("rate", "1.00");
 		return "dashboard";
 	}
 }
