@@ -35,7 +35,7 @@ public class DashboardController {
 	}
 
 	public String GetTollRateBackup(@RequestParam int stationId, Model m){
-		System.out.println("Fallback oerationcalled!");
+		System.out.println("Fallback operation called!");
 		m.addAttribute("rate", "1.00");
 		return "dashboard";
 	}
